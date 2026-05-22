@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-950 text-slate-100 p-2 md:p-6">
+    
+    <div class="mb-8">
+        <h2 class="text-3xl font-extrabold text-white tracking-tight">System Profile</h2>
+        <p class="text-sm text-slate-400 mt-1">Manage your administrator account credentials, layout toggles, and automated report shortcuts.</p>
+    </div>
+
+    <section class="rounded-2xl bg-slate-900 border border-slate-800 p-6 md:p-8 shadow-2xl">
+        <h1 class="text-xl font-bold text-white tracking-tight">Profile Workspace</h1>
+        <p class="mt-1 text-sm text-slate-400">Manage your profile, preferences, and workspace system limits.</p>
+
+        <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            
+            <div class="rounded-xl bg-slate-950 p-5 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-full bg-indigo-600/20 border border-indigo-500/40 grid place-items-center font-bold text-lg text-indigo-400 tracking-tight shadow-inner">
+                        EE
+                    </div>
+                    <div>
+                        <p class="font-bold text-white text-base">System Administrator</p>
+                        <p class="text-xs text-slate-400 font-mono mt-0.5">admin@equiestate.local</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-xl bg-slate-950 p-5 border border-slate-800 flex flex-col justify-center">
+                <h3 class="mb-4 font-bold text-white text-sm uppercase tracking-wider text-slate-400">System Preferences</h3>
+                
+                <div class="flex items-center justify-between py-2 border-b border-slate-900">
+                    <span class="text-sm font-medium text-slate-300">Email Audit Reports</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" checked>
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-slate-400 peer-checked:after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between py-2 pt-3">
+                    <span class="text-sm font-medium text-slate-300">Live Engine Cache</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-slate-400 peer-checked:after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="rounded-xl bg-slate-950 p-5 border border-slate-800 md:col-span-2 lg:col-span-1">
+                <h3 class="mb-4 font-bold text-white text-sm uppercase tracking-wider text-slate-400">Quick Reports</h3>
+                <ul class="grid grid-cols-2 gap-3 text-xs font-semibold">
+                    <li class="rounded-xl bg-indigo-600/10 border border-indigo-500/20 p-3 text-indigo-400 text-center hover:bg-indigo-600/20 transition cursor-pointer">
+                        Daily Ledger
+                    </li>
+                    <li class="rounded-xl bg-indigo-600/10 border border-indigo-500/20 p-3 text-indigo-400 text-center hover:bg-indigo-600/20 transition cursor-pointer">
+                        Rent Rollover
+                    </li>
+                    <li class="rounded-xl bg-indigo-600/10 border border-indigo-500/20 p-3 text-indigo-400 text-center hover:bg-indigo-600/20 transition cursor-pointer">
+                        Vacant Summary
+                    </li>
+                    <li class="rounded-xl bg-indigo-600/10 border border-indigo-500/20 p-3 text-indigo-400 text-center hover:bg-indigo-600/20 transition cursor-pointer">
+                        Tax Export
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+{% endblock %}

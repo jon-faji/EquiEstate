@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">Tenants Registry</h2>
+        <p class="text-sm text-slate-400 mt-1">Active customer lease contract mappings, financial records, and expiration timelines.</p>
+    </div>
+    <div>
+        <a href="/admin/estateapp/tenant/add/" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow transition duration-150">
+            <i data-lucide="user-plus" class="size-4"></i>
+            <span>Register Tenant</span>
+        </a>
+    </div>
+</div>
+
+<div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider bg-slate-950/40">
+                    <th class="py-4 px-6">Lease Holder Name</th>
+                    <th class="py-4 px-6">Assigned Asset Placement</th>
+                    <th class="py-4 px-6">Contract Term Range</th>
+                    <th class="py-4 px-6 text-right">Monthly Rent Amount</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-sm text-slate-300">
+                {% for tenant in tenants %}
+                <tr class="hover:bg-slate-850/40 transition duration-150 group">
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-white group-hover:text-indigo-400 transition">{{ tenant.last_name }}, {{ tenant.first_name }}</div>
+                        <div class="text-xs text-slate-500 font-mono mt-0.5">{{ tenant.email }} • {{ tenant.phone }}</div>
+                    </td>
+                    <td class="py-4 px-6 max-w-xs">
+                        {% if tenant.property %}
+                        <div class="font-medium text-slate-200 truncate">{{ tenant.property.name }}</div>
+                        <div class="text-xs text-slate-500 truncate mt-0.5">{{ tenant.property.address }}</div>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-medium bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            Unassigned Asset
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-6 text-slate-400 font-medium">
+                        <div class="flex items-center gap-2">
+                            <span>{{ tenant.lease_start|date:"M d, Y" }}</span>
+                            <span class="text-slate-600">→</span>
+                            <span class="text-slate-200">{{ tenant.lease_end|date:"M d, Y" }}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-right font-mono font-bold text-emerald-400 text-base">
+                        ${{ tenant.rent_amount }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-12 text-slate-500">
+                        <i data-lucide="users" class="size-10 mx-auto text-slate-600 mb-3"></i>
+                        <p class="text-sm">No registered client records found inside active tenant database nodes.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

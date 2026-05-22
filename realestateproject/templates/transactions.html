@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">Financial Transaction Ledger</h2>
+        <p class="text-sm text-slate-400 mt-1">Comprehensive chronological operational accounting audit logs across properties.</p>
+    </div>
+    <div>
+        <a href="/admin/estateapp/transaction/add/" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow transition duration-150">
+            <i data-lucide="receipt" class="size-4"></i>
+            <span>Log Transaction</span>
+        </a>
+    </div>
+</div>
+
+<div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider bg-slate-950/40">
+                    <th class="py-4 px-6">Execution Date</th>
+                    <th class="py-4 px-6">Source Asset Location</th>
+                    <th class="py-4 px-6">Payer Identity</th>
+                    <th class="py-4 px-6 text-center">Settlement Status</th>
+                    <th class="py-4 px-6 text-right">Invoiced Amount</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 font-medium text-sm text-slate-300">
+                {% for tx in transactions %}
+                <tr class="hover:bg-slate-850/40 transition duration-150">
+                    <td class="py-4 px-6 font-mono text-slate-400">
+                        {{ tx.date|date:"Y-m-d" }}
+                    </td>
+                    <td class="py-4 px-6 text-white font-semibold">
+                        {{ tx.property.name }}
+                    </td>
+                    <td class="py-4 px-6 text-slate-300">
+                        {{ tx.tenant.last_name }}, {{ tx.tenant.first_name }}
+                    </td>
+                    <td class="py-4 px-6 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border
+                            {% if tx.status == 'Paid' %} bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                            {% elif tx.status == 'Pending' %} bg-amber-500/10 text-amber-400 border-amber-500/20
+                            {% else %} bg-rose-500/10 text-rose-400 border-rose-500/20 {% endif %}">
+                            {{ tx.status }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right font-mono font-bold text-white">
+                        ${{ tx.amount }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-12 text-slate-500">
+                        <i data-lucide="calculator" class="size-10 mx-auto text-slate-600 mb-3"></i>
+                        <p class="text-sm">No historical capital distributions logged in cashbook cache.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
