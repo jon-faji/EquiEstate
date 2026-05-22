@@ -10,17 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load local environment file if present.
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    with open(env_path, 'r', encoding='utf-8') as env_file:
+        for line in env_file:
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
+                continue
+            key, _, value = stripped.partition('=')
+            if key and value:
+                os.environ.setdefault(key, value)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dk(&dgqzg_(7qn)xi(__9ba1gf=(-542y4jjexq+q*ry53#*!m'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError('DJANGO_SECRET_KEY environment variable is not set.')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
