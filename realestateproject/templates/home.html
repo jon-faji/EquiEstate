@@ -4,49 +4,59 @@
 {% block content %}
 <div class="mb-8">
     <h2 class="text-2xl font-bold text-white tracking-tight">Portfolio Analytics Summary</h2>
-    <p class="text-sm text-slate-400 mt-1">Real-time status overview of your physical assets and tenant links.</p>
+    <p class="text-sm text-slate-400 mt-1">Real-time status overview of your physical assets, leaseholders, and transaction records.</p>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700/80 shadow-sm flex items-center justify-between">
+    <a href="{% url 'properties_view' %}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-indigo-500/50 hover:bg-slate-850/40 shadow-sm flex items-center justify-between group">
         <div class="space-y-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Managed Assets</span>
-            <span class="text-4xl font-extrabold text-white tracking-tight block">{{ home.count }}</span>
+            <span class="text-4xl font-extrabold text-white tracking-tight block group-hover:text-indigo-400 transition">{{ home.count }}</span>
             <span class="text-xs text-slate-500 block">Active physical properties</span>
         </div>
-        <div class="p-4 rounded-xl bg-indigo-500/10 text-indigo-400">
+        <div class="p-4 rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition">
             <i data-lucide="building-2" class="w-6 h-6"></i>
         </div>
-    </div>
+    </a>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700/80 shadow-sm flex items-center justify-between">
+    <a href="{% url 'tenants_view' %}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-emerald-500/50 hover:bg-slate-850/40 shadow-sm flex items-center justify-between group">
         <div class="space-y-2">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Platform Core</span>
-            <span class="text-xl font-bold text-slate-200 tracking-tight block">Django & Tailwind</span>
-            <span class="text-xs text-slate-500 block">Decoupled template styling</span>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Active Occupancy</span>
+            <span class="text-4xl font-extrabold text-white tracking-tight block group-hover:text-emerald-400 transition">
+                {{ tenants_count|default:"0" }}
+            </span>
+            <span class="text-xs text-slate-500 block">Registered customer leases</span>
         </div>
-        <div class="p-4 rounded-xl bg-emerald-500/10 text-emerald-400">
-            <i data-lucide="cpu" class="w-6 h-6"></i>
+        <div class="p-4 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition">
+            <i data-lucide="users" class="w-6 h-6"></i>
         </div>
-    </div>
+    </a>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700/80 shadow-sm flex items-center justify-between sm:col-span-2 lg:col-span-1">
+    <a href="{% url 'ledger_view' %}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-amber-500/50 hover:bg-slate-850/40 shadow-sm flex items-center justify-between group sm:col-span-2 lg:col-span-1">
         <div class="space-y-2">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Persistence Engine</span>
-            <span class="text-xl font-bold text-slate-200 tracking-tight block">SQLite Local Cache</span>
-            <span class="text-xs text-slate-500 block">Ready for enterprise production migration</span>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Ledger Statements</span>
+            <span class="text-4xl font-extrabold text-white tracking-tight block group-hover:text-amber-400 transition font-mono">
+                {{ transactions_count|default:"0" }}
+            </span>
+            <span class="text-xs text-slate-500 block">Total accounting row logs</span>
         </div>
-        <div class="p-4 rounded-xl bg-amber-500/10 text-amber-400">
-            <i data-lucide="database" class="w-6 h-6"></i>
+        <div class="p-4 rounded-xl bg-amber-500/10 text-amber-400 group-hover:bg-amber-500/20 transition">
+            <i data-lucide="receipt" class="w-6 h-6"></i>
         </div>
-    </div>
+    </a>
 </div>
 
 <div class="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
-    <div class="p-6 border-b border-slate-800 bg-slate-900/50">
-        <h3 class="text-base font-bold text-white">Property Registration Records</h3>
-        <p class="text-xs text-slate-400 mt-0.5">Comprehensive audit log matching your data models layer.</p>
+    <div class="p-6 border-b border-slate-800 bg-slate-900/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+            <h3 class="text-base font-bold text-white">Property Registration Records</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Comprehensive audit log matching your active data models layer.</p>
+        </div>
+        <a href="{% url 'properties_view' %}" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1 self-start sm:self-center">
+            <span>View Full Dashboard</span>
+            <i data-lucide="arrow-right" class="size-3.5"></i>
+        </a>
     </div>
 
     <div class="overflow-x-auto">
@@ -62,7 +72,7 @@
             <tbody class="divide-y divide-slate-800/60 text-sm text-slate-300">
                 {% for property in home %}
                 <tr class="hover:bg-slate-850/40 transition duration-150 group">
-                    <td class="py-4 px-6 font-semibold text-white group-hover:text-indigo-400">{{ property.name }}</td>
+                    <td class="py-4 px-6 font-semibold text-white group-hover:text-indigo-400 transition">{{ property.name }}</td>
                     <td class="py-4 px-6 text-slate-400">{{ property.address }}</td>
                     <td class="py-4 px-6 text-center">
                         <span class="inline-block px-3 py-1 rounded-full text-xs font-medium tracking-wide
@@ -76,7 +86,10 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center py-12 text-slate-500">No assets discovered inside system storage.</td>
+                    <td colspan="4" class="text-center py-12 text-slate-500">
+                        <i data-lucide="building" class="size-8 mx-auto text-slate-600 mb-2"></i>
+                        <p class="text-sm">No assets discovered inside system storage databases.</p>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
