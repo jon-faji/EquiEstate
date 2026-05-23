@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="space-y-6" x-data="{ activeReport: 'none' }">
+<div class="space-y-6" x-data="{ activeReport: 'none', currentEmail: 'admin@equiestate.local' }">
     <div>
         <h1 class="text-3xl font-extrabold text-white tracking-tight">System Profile</h1>
         <p class="text-sm text-slate-400 mt-1">
@@ -10,24 +10,20 @@
         </p>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
-        <div>
-            <h2 class="text-xl font-bold text-white tracking-tight">Profile Workspace</h2>
-            <p class="text-sm text-slate-400 mt-0.5">Manage your profile, preferences, and workspace system limits.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-slate-950 border border-slate-850 rounded-xl p-6 flex items-center gap-4">
-                <div class="size-14 bg-indigo-950 border border-indigo-800 text-indigo-400 rounded-full flex items-center justify-center font-bold text-lg shadow-inner">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        <div class="xl:col-span-1 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl flex items-center gap-4">
+                <div class="size-14 bg-indigo-950 border border-indigo-800 text-indigo-400 rounded-full flex items-center justify-center font-bold text-lg shadow-inner shrink-0">
                     EE
                 </div>
-                <div>
-                    <h3 class="text-base font-bold text-white">System Administrator</h3>
-                    <p class="text-xs text-slate-500 font-mono mt-0.5">admin@equiestate.local</p>
+                <div class="min-w-0">
+                    <h3 class="text-base font-bold text-white truncate">System Administrator</h3>
+                    <p class="text-xs text-slate-500 font-mono mt-0.5 truncate" x-text="currentEmail"></p>
                 </div>
             </div>
 
-            <div class="bg-slate-950 border border-slate-850 rounded-xl p-6 space-y-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">System Preferences</h4>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between text-sm">
@@ -47,32 +43,86 @@
                 </div>
             </div>
 
-            <div class="bg-slate-950 border border-slate-850 rounded-xl p-6 space-y-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Quick Reports</h4>
                 <div class="grid grid-cols-2 gap-3">
                     <button @click="activeReport = (activeReport === 'ledger' ? 'none' : 'ledger')" 
-                            :class="activeReport === 'ledger' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-850'"
+                            :class="activeReport === 'ledger' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-950 text-slate-300 hover:text-white hover:bg-slate-850'"
                             class="px-3 py-2.5 rounded-xl border text-xs font-semibold tracking-tight transition text-center shadow-sm">
                         Daily Ledger
                     </button>
                     <button @click="activeReport = (activeReport === 'rollover' ? 'none' : 'rollover')" 
-                            :class="activeReport === 'rollover' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-850'"
+                            :class="activeReport === 'rollover' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-950 text-slate-300 hover:text-white hover:bg-slate-850'"
                             class="px-3 py-2.5 rounded-xl border text-xs font-semibold tracking-tight transition text-center shadow-sm">
                         Rent Rollover
                     </button>
                     <button @click="activeReport = (activeReport === 'vacant' ? 'none' : 'vacant')" 
-                            :class="activeReport === 'vacant' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-850'"
+                            :class="activeReport === 'vacant' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-950 text-slate-300 hover:text-white hover:bg-slate-850'"
                             class="px-3 py-2.5 rounded-xl border text-xs font-semibold tracking-tight transition text-center shadow-sm">
                         Vacant Summary
                     </button>
                     <button @click="activeReport = (activeReport === 'tax' ? 'none' : 'tax')" 
-                            :class="activeReport === 'tax' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-850'"
+                            :class="activeReport === 'tax' ? 'border-indigo-500 bg-indigo-950/40 text-indigo-400' : 'border-slate-800 bg-slate-950 text-slate-300 hover:text-white hover:bg-slate-850'"
                             class="px-3 py-2.5 rounded-xl border text-xs font-semibold tracking-tight transition text-center shadow-sm">
                         Tax Export
                     </button>
                 </div>
             </div>
         </div>
+
+        <div class="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col justify-between">
+            <div>
+                <div class="border-b border-slate-800 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-white tracking-tight">Security Credentials</h2>
+                    <p class="text-sm text-slate-400 mt-0.5">Modify workspace system privileges, target emails, and administrative security tokens.</p>
+                </div>
+
+                <form id="profile-update-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Username Handle</label>
+                            <input type="text" value="admin" disabled
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed outline-none select-none" />
+                        </div>
+                        <div>
+                            <label for="admin_email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Primary Email Address</label>
+                            <input type="email" id="admin_email" x-model="currentEmail" required
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800 my-6" />
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="current_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Verify Old Password</label>
+                            <input type="password" id="current_password" placeholder="••••••••••••"
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="new_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">New Password Key</label>
+                                <input type="password" id="new_password" placeholder="Min 8 characters"
+                                       class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                            </div>
+                            <div>
+                                <label for="confirm_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Confirm New Key</label>
+                                <input type="password" id="confirm_password" placeholder="Repeat verification key"
+                                       class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-800 mt-6">
+                <button type="submit" form="profile-update-form" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow transition duration-150">
+                    <i data-lucide="check-circle" class="size-4"></i>
+                    <span>Apply Settings</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <div class="transition-all duration-300">
