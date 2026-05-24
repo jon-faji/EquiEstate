@@ -12,7 +12,9 @@
     <a href="{% url 'properties_view' %}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-indigo-500/50 hover:bg-slate-850/40 shadow-sm flex items-center justify-between group">
         <div class="space-y-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Managed Assets</span>
-            <span class="text-4xl font-extrabold text-white tracking-tight block group-hover:text-indigo-400 transition">{{ home.count }}</span>
+            <span class="text-4xl font-extrabold text-white tracking-tight block group-hover:text-indigo-400 transition">
+                {{ total_properties|default:"0" }}
+            </span>
             <span class="text-xs text-slate-500 block">Active physical properties</span>
         </div>
         <div class="p-4 rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition">

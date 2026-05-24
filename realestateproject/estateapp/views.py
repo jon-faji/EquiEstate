@@ -3,13 +3,17 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q, Sum
 from django.utils import timezone
 from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from estateapp.models import Property, Tenant, Transaction, SystemProfile
 
-# --- Dashboard & Registry Views ---
+class SuperuserOrStaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_authenticated and (self.request.user.is_staff or self.request.user.is_superuser)
 
 class PropertiesDashboardView(LoginRequiredMixin, ListView):
     login_url = '/accounts/login/'
@@ -41,7 +45,9 @@ class TenantsRegistryView(LoginRequiredMixin, ListView):
             qs = qs.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query))
         sort_by = self.request.GET.get('sort_by')
         allowed_sorting = ['last_name', 'created_at', '-last_name', '-created_at']
-        return qs.order_by(sort_by if sort_by in allowed_sorting else ('last_name', 'created_at'))
+        if sort_by in allowed_sorting:
+            return qs.order_by(sort_by)
+        return qs.order_by('last_name', 'created_at')
 
 class FinancialLedgerView(LoginRequiredMixin, ListView):
     login_url = '/accounts/login/'
@@ -63,7 +69,7 @@ class FinancialLedgerView(LoginRequiredMixin, ListView):
                 url = f'https://api.frankfurter.dev/v2/rates?base=USD&quotes={selected_currency}'
                 response = requests.get(url, timeout=5)
                 data = response.json()
-                rate = next((item['rate'] for item in data if item['quote'] == selected_currency), 1.0)
+                rate = data.get('rates', {}).get(selected_currency, 1.0)
                 cache.set(cache_key, rate, 43200)
                 context['api_error'] = False
             except Exception:
@@ -82,75 +88,72 @@ class FinancialLedgerView(LoginRequiredMixin, ListView):
         allowed_sorting = ['amount', 'date', '-amount', '-date']
         return qs.order_by(sort_by if sort_by in allowed_sorting else '-date')
 
-# --- CRUD Views (Secured) ---
-
-class PropertyCreateView(LoginRequiredMixin, CreateView):
+class PropertyCreateView(SuperuserOrStaffRequiredMixin, CreateView):
     login_url = '/accounts/login/'
     model = Property
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('properties_view')
 
-class PropertyUpdateView(LoginRequiredMixin, UpdateView):
+class PropertyUpdateView(SuperuserOrStaffRequiredMixin, UpdateView):
     login_url = '/accounts/login/'
     model = Property
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('properties_view')
 
-class PropertyDeleteView(LoginRequiredMixin, DeleteView):
+class PropertyDeleteView(SuperuserOrStaffRequiredMixin, DeleteView):
     login_url = '/accounts/login/'
     model = Property
     template_name = 'crud_delete.html'
     success_url = reverse_lazy('properties_view')
 
-class TenantCreateView(LoginRequiredMixin, CreateView):
+class TenantCreateView(SuperuserOrStaffRequiredMixin, CreateView):
     login_url = '/accounts/login/'
     model = Tenant
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('tenants_view')
 
-class TenantUpdateView(LoginRequiredMixin, UpdateView):
+class TenantUpdateView(SuperuserOrStaffRequiredMixin, UpdateView):
     login_url = '/accounts/login/'
     model = Tenant
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('tenants_view')
 
-class TenantDeleteView(LoginRequiredMixin, DeleteView):
+class TenantDeleteView(SuperuserOrStaffRequiredMixin, DeleteView):
     login_url = '/accounts/login/'
     model = Tenant
     template_name = 'crud_delete.html'
     success_url = reverse_lazy('tenants_view')
 
-class TransactionCreateView(LoginRequiredMixin, CreateView):
+class TransactionCreateView(SuperuserOrStaffRequiredMixin, CreateView):
     login_url = '/accounts/login/'
     model = Transaction
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('ledger_view')
 
-class TransactionUpdateView(LoginRequiredMixin, UpdateView):
+class TransactionUpdateView(SuperuserOrStaffRequiredMixin, UpdateView):
     login_url = '/accounts/login/'
     model = Transaction
     fields = '__all__'
     template_name = 'crud_form.html'
     success_url = reverse_lazy('ledger_view')
 
-class TransactionDeleteView(LoginRequiredMixin, DeleteView):
+class TransactionDeleteView(SuperuserOrStaffRequiredMixin, DeleteView):
     login_url = '/accounts/login/'
     model = Transaction
     template_name = 'crud_delete.html'
     success_url = reverse_lazy('ledger_view')
-
-# --- Analytics & Profile ---
 
 class StatisticsDashboardView(LoginRequiredMixin, ListView):
     login_url = '/accounts/login/'
     model = Property
     template_name = "statistics.html"
 
+@method_decorator(csrf_protect, name='post')
 class ProfileDashboardView(LoginRequiredMixin, ListView):
     login_url = '/accounts/login/'
     model = Property
@@ -171,8 +174,6 @@ class ProfileDashboardView(LoginRequiredMixin, ListView):
             profile.email = new_email
         profile.save()
         return redirect('profile_view')
-
-# --- Home Page ---
 
 class HomePageView(ListView):
     model = Property

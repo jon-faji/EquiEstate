@@ -19,9 +19,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
     raise RuntimeError('DJANGO_SECRET_KEY environment variable is not set.')
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'psusphere.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'production.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -157,7 +155,7 @@ CACHES = {
 
 import os
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'False'
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -165,3 +163,5 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    
