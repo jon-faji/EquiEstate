@@ -3,7 +3,6 @@
 
 {% block content %}
 <div class="min-h-screen bg-slate-950 text-slate-100 p-2 md:p-6">
-    
     <div class="mb-8">
         <h2 class="text-3xl font-extrabold text-white tracking-tight">Portfolio Statistics</h2>
         <p class="text-sm text-slate-400 mt-1">Monthly collection revenue breakdowns aggregated by estate asset classifications.</p>
@@ -17,9 +16,9 @@
             <canvas id="equiEstateStatsChart" class="w-full h-full"></canvas>
         </div>
     </section>
-
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     (function () {
         document.addEventListener("DOMContentLoaded", function () {
@@ -27,29 +26,27 @@
             if (!canvasElement) return;
 
             const chartContext = canvasElement.getContext('2d');
-            
-            // Data arrays adapted from the template's data layer properties
             const monthlyLabels = ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
             
             const datasetsArray = [
                 {
                     label: 'Commercial Assets ($k)',
                     data: [60, 75, 68, 80, 70, 72, 65, 66],
-                    backgroundColor: '#6D4DFF', // Premium template purple fill
+                    backgroundColor: '#6D4DFF',
                     borderRadius: 6,
                     borderSkipped: false
                 },
                 {
                     label: 'Industrial Assets ($k)',
                     data: [40, 55, 60, 65, 90, 95, 70, 65],
-                    backgroundColor: '#FF7A00', // Premium template orange fill
+                    backgroundColor: '#FF7A00',
                     borderRadius: 6,
                     borderSkipped: false
                 },
                 {
                     label: 'Residential Assets ($k)',
                     data: [30, 35, 32, 40, 45, 50, 42, 40],
-                    backgroundColor: '#FF3D71', // Premium template pink/red fill
+                    backgroundColor: '#FF3D71',
                     borderRadius: 6,
                     borderSkipped: false
                 }
@@ -57,10 +54,7 @@
 
             new Chart(chartContext, {
                 type: 'bar',
-                data: {
-                    labels: monthlyLabels,
-                    datasets: datasetsArray
-                },
+                data: { labels: monthlyLabels, datasets: datasetsArray },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -68,37 +62,25 @@
                         legend: {
                             position: 'top',
                             labels: {
-                                color: '#94a3b8', // Tailwind slate-400 font color
+                                color: '#94a3b8',
                                 font: { family: 'ui-sans-serif, system-ui', size: 12, weight: '500' },
                                 usePointStyle: true,
                                 boxWidth: 8
                             }
                         },
                         tooltip: {
-                            backgroundColor: '#0f172a', // Slate-900 tooltips dark card
+                            backgroundColor: '#0f172a',
                             titleColor: '#ffffff',
                             bodyColor: '#e2e8f0',
-                            borderColor: '#334155', // Slate-700 container borders
+                            borderColor: '#334155',
                             borderWidth: 1,
                             padding: 12,
                             cornerRadius: 8
                         }
                     },
                     scales: {
-                        x: {
-                            grid: {
-                                color: '#1e293b', // Muted dark grid borders
-                                drawBorder: false
-                            },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        y: {
-                            grid: {
-                                color: '#1e293b',
-                                drawBorder: false
-                            },
-                            ticks: { color: '#94a3b8' }
-                        }
+                        x: { grid: { color: '#1e293b', drawBorder: false }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#1e293b', drawBorder: false }, ticks: { color: '#94a3b8' } }
                     }
                 }
             });

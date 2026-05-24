@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
-from django.urls import path
-
+from django.urls import path, include
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 from estateapp.views import (
     FinancialLedgerView,
     HomePageView,
@@ -20,58 +20,37 @@ from estateapp.views import (
     TransactionUpdateView,
 )
 
+def root_routing_logic(request):
+    if request.user.is_authenticated:
+        return redirect("home")
+    return redirect("/accounts/login/")
 
 urlpatterns = [
-    # Admin
+    
+    path('', root_routing_logic, name='root_redirect'),
     path("admin/", admin.site.urls),
+    path("accounts/", include("allauth.urls")),
 
-    # Main Pages
-    path("", HomePageView.as_view(), name="home"),
-    path("properties/", PropertiesDashboardView.as_view(), name="properties_view"),
-    path("tenants/", TenantsRegistryView.as_view(), name="tenants_view"),
-    path("ledger/", FinancialLedgerView.as_view(), name="ledger_view"),
-    path("statistics/", StatisticsDashboardView.as_view(), name="statistics_view"),
-    path("profile/", ProfileDashboardView.as_view(), name="profile_view"),
+    # Core Application Panels Workspace (WRAPPED IN LOGIN_REQUIRED)
+    path("dashboard/", login_required(HomePageView.as_view()), name="home"),
+    path("properties/", login_required(PropertiesDashboardView.as_view()), name="properties_view"),
+    path("tenants/", login_required(TenantsRegistryView.as_view()), name="tenants_view"),
+    path("ledger/", login_required(FinancialLedgerView.as_view()), name="ledger_view"),
+    path("statistics/", login_required(StatisticsDashboardView.as_view()), name="statistics_view"),
+    path("profile/", login_required(ProfileDashboardView.as_view()), name="profile_view"),
 
-    # Authentication
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    # Property Allocation Pipelines (CRUD Operations - WRAPPED)
+    path("properties/add/", login_required(PropertyCreateView.as_view()), name="property_add"),
+    path("properties/<int:pk>/edit/", login_required(PropertyUpdateView.as_view()), name="property_edit"),
+    path("properties/<int:pk>/delete/", login_required(PropertyDeleteView.as_view()), name="property_delete"),
 
-    # Property Management
-    path("properties/add/", PropertyCreateView.as_view(), name="property_add"),
-    path(
-        "properties/<int:pk>/edit/",
-        PropertyUpdateView.as_view(),
-        name="property_edit",
-    ),
-    path(
-        "properties/<int:pk>/delete/",
-        PropertyDeleteView.as_view(),
-        name="property_delete",
-    ),
+    # Tenant Records Management (CRUD Operations - WRAPPED)
+    path("tenants/add/", login_required(TenantCreateView.as_view()), name="tenant_add"),
+    path("tenants/<int:pk>/edit/", login_required(TenantUpdateView.as_view()), name="tenant_edit"),
+    path("tenants/<int:pk>/delete/", login_required(TenantDeleteView.as_view()), name="tenant_delete"),
 
-    # Tenant Management
-    path("tenants/add/", TenantCreateView.as_view(), name="tenant_add"),
-    path(
-        "tenants/<int:pk>/edit/",
-        TenantUpdateView.as_view(),
-        name="tenant_edit",
-    ),
-    path(
-        "tenants/<int:pk>/delete/",
-        TenantDeleteView.as_view(),
-        name="tenant_delete",
-    ),
-
-    # Financial Transactions
-    path("ledger/add/", TransactionCreateView.as_view(), name="transaction_add"),
-    path(
-        "ledger/<int:pk>/edit/",
-        TransactionUpdateView.as_view(),
-        name="transaction_edit",
-    ),
-    path(
-        "ledger/<int:pk>/delete/",
-        TransactionDeleteView.as_view(),
-        name="transaction_delete",
-    ),
+    # Financial Transaction Ledgers (CRUD Operations - WRAPPED)
+    path("ledger/add/", login_required(TransactionCreateView.as_view()), name="transaction_add"),
+    path("ledger/<int:pk>/edit/", login_required(TransactionUpdateView.as_view()), name="transaction_edit"),
+    path("ledger/<int:pk>/delete/", login_required(TransactionDeleteView.as_view()), name="transaction_delete"),
 ]

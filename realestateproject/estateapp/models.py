@@ -48,3 +48,11 @@ class Transaction(BaseModel):
 
     def __str__(self):
         return f"{self.property.name} - {self.tenant.last_name} ({self.status})"
+    
+class SystemProfile(BaseModel):
+    profile_name = models.CharField(max_length=100, default="System Administrator")
+    email = models.EmailField(default="admin@equiestate.local")
+    avatar = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+
+    def __str__(self):
+        return self.profile_name

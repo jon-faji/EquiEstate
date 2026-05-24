@@ -55,13 +55,13 @@
 
                 <div class="h-px bg-slate-800/60 my-1"></div>
 
-                <form method="POST" action="{% url 'logout' %}" class="block w-full">
-                    {% csrf_token %}
-                    <button type="submit" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition text-left">
-                        <i data-lucide="log-out" class="size-3.5"></i>
-                        <span>Log Out Account</span>
-                    </button>
-                </form>
+            <form method="POST" action="{% url 'account_logout' %}" class="block w-full">
+                {% csrf_token %}
+                <button type="submit" class="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition text-left w-full">
+                    <i data-lucide="log-out" class="size-3.5"></i>
+                    <span>Log Out Account</span>
+                </button>
+            </form>
 
             </div>
         </div>

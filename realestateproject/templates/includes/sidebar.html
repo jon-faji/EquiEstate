@@ -86,10 +86,27 @@
     </ul>
   </nav>
 
-  <div class="px-3 pb-5 pt-2">
-    <div class="rounded-2xl bg-white/10 p-4 border border-white/5">
-      <p class="text-xs leading-5 text-white/80 font-medium">Control your portfolio dataset logs with ease.</p>
-    </div>
+  <div class="px-3 pb-5 pt-2 border-t border-white/5 bg-slate-950/20">
+    <ul class="flex flex-col gap-1">
+      <li>
+        <a href="{% url 'profile_view' %}" 
+           class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+          <i data-lucide="settings" class="size-4.5 transition-transform group-hover:rotate-45"></i>
+          <span class="text-xs font-medium">Control Preferences</span>
+        </a>
+      </li>
+
+      <li>
+        <form method="POST" action="{% url 'account_logout' %}" class="w-full">
+          {% csrf_token %}
+          <button type="submit" 
+                  class="group flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-rose-300/80 hover:text-rose-200 hover:bg-rose-500/10 transition-colors text-left">
+            <i data-lucide="log-out" class="size-4.5 text-rose-400"></i>
+            <span class="text-xs font-medium">Terminate Session</span>
+          </button>
+        </form>
+      </li>
+    </ul>
   </div>
 
 </aside>

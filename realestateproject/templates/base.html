@@ -1,10 +1,13 @@
 {% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EquiEstate Engine{% endblock %}</title>
+    
+    {% progressive_web_app_meta %}
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -54,59 +57,43 @@
             const overlay = document.getElementById("sidebar-overlay");
             const contentWrapper = document.getElementById("main-content-wrapper");
 
-            // Absolute guard line preventing script failures if selectors break
             if (!sidebar || !openBtn || !closeBtn || !overlay) {
                 lucide.createIcons();
                 return;
             }
 
             function closeSidebar() {
-                // Animate out of viewport bounds
                 sidebar.classList.add("-translate-x-full");
-                // On large screens, remove the left margin spacer to allow content expanding
                 sidebar.classList.add("lg:-mr-64"); 
-                
                 openBtn.classList.remove("hidden");
                 overlay.classList.add("opacity-0", "pointer-events-none");
-                
                 localStorage.setItem("sidebarState", "hidden");
             }
 
             function openSidebar() {
-                // Clear out structural offsets to slide back home
                 sidebar.classList.remove("-translate-x-full", "lg:-mr-64");
                 openBtn.classList.add("hidden");
-                
-                // Show dimmer mask only if rendering on thin devices
                 if (window.innerWidth < 1024) {
                     overlay.classList.remove("opacity-0", "pointer-events-none");
                 }
-                
                 localStorage.setItem("sidebarState", "visible");
             }
 
-            // Click Event Listeners
             closeBtn.addEventListener("click", closeSidebar);
             openBtn.addEventListener("click", openSidebar);
             overlay.addEventListener("click", closeSidebar);
 
-            // Read state persistence memory context
             const savedState = localStorage.getItem("sidebarState");
             
             if (savedState === "hidden") {
-                // Apply layout modifiers instantly before visual pipeline flashes
                 sidebar.classList.add("transition-none", "-translate-x-full", "lg:-mr-64");
                 openBtn.classList.remove("hidden");
-                
-                // Flush paint layout context stack to normalize element height matrices
                 sidebar.offsetHeight; 
                 sidebar.classList.remove("transition-none");
             } else if (window.innerWidth < 1024) {
-                // Clean baseline state for un-cached low-res targets
                 closeSidebar();
             }
 
-            // Fire up and initialize vector icon frameworks
             lucide.createIcons();
         });
     </script>

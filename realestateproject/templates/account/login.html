@@ -1,0 +1,114 @@
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 md:p-8" x-data="{ currentTab: 'login' }">
+        <div class="flex items-center justify-center gap-2.5 mb-6">
+            <img src="{% static 'img/logo.png' %}" class="size-10 object-contain" alt="EquiEstate Logo">
+            <span class="text-lg font-bold tracking-wide text-white">EquiEstate</span>
+        </div>
+
+        <div class="flex border-b border-slate-800 mb-6 p-1 bg-slate-950 rounded-xl">
+            <button @click="currentTab = 'login'" :class="currentTab === 'login' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'" class="flex-1 py-2 text-xs font-semibold rounded-lg transition duration-150">Login</button>
+            <button @click="currentTab = 'register'" :class="currentTab === 'register' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'" class="flex-1 py-2 text-xs font-semibold rounded-lg transition duration-150">Register</button>
+        </div>
+
+        <div x-show="currentTab === 'login'" x-transition>
+            <div class="text-center mb-5">
+                <p class="text-xs text-slate-400 font-medium mb-3">Sign in via infrastructure provider</p>
+                <div class="flex items-center justify-center">
+                    <a href="{% provider_login_url 'google' %}" class="flex items-center justify-center size-10 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition shadow-sm group">
+                        <img src="{% static 'img/google_icon.png' %}" class="size-5" alt="Google Sign-In">
+                     </a>
+                </div>
+            </div>
+
+            <div class="relative flex py-2 items-center my-4">
+                <div class="flex-grow border-t border-slate-800/80"></div>
+                <span class="flex-shrink mx-4 text-slate-500 font-mono text-[10px] uppercase tracking-wider">Or internal handle</span>
+                <div class="flex-grow border-t border-slate-800/80"></div>
+            </div>
+
+            <form method="POST" action="{% url 'account_login' %}" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="id_login" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Email or Username</label>
+                    <input type="text" name="login" id="id_login" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="id_password" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Security Key</label>
+                        <a href="{% url 'account_reset_password' %}" class="text-[11px] font-medium text-indigo-400 hover:text-indigo-300 transition">Forgot password?</a>
+                    </div>
+                    <input type="password" name="password" id="id_password" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="loginCheck" name="remember" type="checkbox" checked class="size-4 rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500/10 focus:ring-offset-slate-900">
+                    <label for="loginCheck" class="ml-2 block text-xs text-slate-400 font-medium">Keep session authenticated</label>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="p-3 text-xs font-semibold rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow transition duration-150">Sign In</button>
+            </form>
+        </div>
+
+        <div x-show="currentTab === 'register'" x-transition style="display: none;">
+            <div class="text-center mb-5">
+                <p class="text-xs text-slate-400 font-medium mb-3">Provision via social provider</p>
+                <div class="flex items-center justify-center">
+                    <a href="{% provider_login_url 'google' %}" class="flex items-center justify-center size-10 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition shadow-sm group">
+                        <img src="{% static 'img/google_icon.png' %}" class="size-5" alt="Google Sign-In">
+                     </a>
+                </div>
+            </div>
+
+            <div class="relative flex py-2 items-center my-4">
+                <div class="flex-grow border-t border-slate-800/80"></div>
+                <span class="flex-shrink mx-4 text-slate-500 font-mono text-[10px] uppercase tracking-wider">Or internal profile</span>
+                <div class="flex-grow border-t border-slate-800/80"></div>
+            </div>
+
+            <form method="POST" action="{% url 'account_signup' %}" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="registerUsername" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Username Handle</label>
+                    <input type="text" name="username" id="registerUsername" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                <div>
+                    <label for="registerEmail" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Target Email Address</label>
+                    <input type="email" name="email" id="registerEmail" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                <div>
+                    <label for="registerPassword" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Account Password</label>
+                    <input type="password" name="password1" id="registerPassword" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                <div>
+                    <label for="registerRepeatPassword" class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Confirm Account Password</label>
+                    <input type="password" name="password2" id="registerRepeatPassword" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow transition duration-150">Register Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); });
+    </script>
+</body>
+</html>
