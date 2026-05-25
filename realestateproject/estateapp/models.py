@@ -31,6 +31,12 @@ class Tenant(BaseModel):
     lease_end = models.DateField() 
     rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # MGA BAGONG FIELDS PARA SA UTILITY EXPENSE CALCULATOR
+    previous_electric_reading = models.FloatField(default=0.0)
+    current_electric_reading = models.FloatField(default=0.0)
+    previous_water_reading = models.FloatField(default=0.0)
+    current_water_reading = models.FloatField(default=0.0)
+
     def __str__(self):
         return f"{self.last_name}, {self.first_name}"
 

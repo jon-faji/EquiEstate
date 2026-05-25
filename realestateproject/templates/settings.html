@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-6" 
+     x-data="{ 
+        activeReport: 'none', 
+        currentEmail: '{{ request.user.email|escapejs }}',
+        emailAudit: true,
+        liveCache: false,
+        newPass: ''
+     }">
+    
+    {% if messages %}
+    <div class="space-y-2">
+        {% for message in messages %}
+        <div class="p-4 rounded-xl text-sm font-semibold tracking-tight border {% if message.tags == 'error' %} bg-rose-500/10 border-rose-500/20 text-rose-400 {% else %} bg-emerald-500/10 border-emerald-500/20 text-emerald-400 {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">System Profile</h1>
+        <p class="text-sm text-slate-400 mt-1">
+            Manage your administrator account credentials, layout toggles, and automated report shortcuts.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        <div class="xl:col-span-1 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl flex items-center gap-4">
+                <div class="size-14 bg-indigo-950 border border-indigo-800 rounded-full flex items-center justify-center font-bold text-lg shadow-inner shrink-0 overflow-hidden">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" class="size-full object-cover">
+                    {% else %}
+                        <span class="text-indigo-400 uppercase">{{ request.user.username|slice:":2" }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="min-w-0">
+                    <h3 class="text-base font-bold text-white truncate">
+                        {% if profile.profile_name %}{{ profile.profile_name }}{% else %}{{ request.user.username }}{% endif %}
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mt-0.5 truncate" x-text="currentEmail"></p>
+                    
+                    <form method="POST" enctype="multipart/form-data" class="mt-1">
+                        {% csrf_token %}
+                        <input type="file" name="avatar" id="avatarInput" class="hidden" onchange="this.form.submit()">
+                        <label for="avatarInput" class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 hover:text-indigo-300 cursor-pointer">
+                            Change Photo
+                        </label>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">System Preferences</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-slate-300 font-medium">Email Audit Reports</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" x-model="emailAudit" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-slate-300 font-medium">Live Engine Cache</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" x-model="liveCache" @change="if(liveCache) { alert('System Engine Cache cleared and re-initialized!'); }" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col justify-between">
+            <div>
+                <div class="border-b border-slate-800 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-white tracking-tight">Security Credentials</h2>
+                    <p class="text-sm text-slate-400 mt-0.5">Modify workspace system privileges, target emails, and administrative security tokens.</p>
+                </div>
+
+                <form id="profile-update-form" method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Username Handle</label>
+                            <input type="text" value="{{ request.user.username }}" disabled
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed outline-none select-none" />
+                        </div>
+                        <div>
+                            <label for="admin_email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Primary Email Address</label>
+                            <input type="email" id="admin_email" name="admin_email" x-model="currentEmail" required
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800 my-6" />
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="current_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Verify Old Password</label>
+                            <input type="password" id="current_password" name="current_password" placeholder="••••••••••••" required
+                                   class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="new_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">New Password Key</label>
+                                <input type="password" id="new_password" name="new_password" x-model="newPass" placeholder="Min 8 characters"
+                                       class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                                
+                                <div class="mt-2 flex gap-1 h-1 w-full bg-slate-850 rounded-full overflow-hidden" x-show="newPass.length > 0">
+                                    <div class="h-full transition-all duration-300" 
+                                         :class="newPass.length < 6 ? 'w-1/3 bg-rose-500' : (newPass.length < 10 ? 'w-2/3 bg-amber-500' : 'w-full bg-emerald-500')">
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-500 mt-1 block" x-show="newPass.length > 0"
+                                      x-text="newPass.length < 6 ? 'Weak key' : (newPass.length < 10 ? 'Medium safety' : 'Strong administrator token')">
+                                </span>
+                            </div>
+                            
+                            <div>
+                                <label for="confirm_password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Confirm New Key</label>
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Repeat verification key"
+                                       class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition outline-none" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-800 mt-6">
+                <button type="submit" form="profile-update-form" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow transition duration-150 cursor-pointer">
+                    <i data-lucide="check-circle" class="size-4"></i>
+                    <span>Apply Settings</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

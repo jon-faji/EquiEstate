@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">Utility Expense Splitter</h1>
+        <p class="text-sm text-slate-400 mt-1">Input master billing totals to dynamically allocate costs based on sub-meter logs.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl h-fit">
+            <h3 class="text-base font-bold text-white mb-4">Master Bill Configuration</h3>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Utility Provider Type</label>
+                    <select name="bill_type" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-indigo-500">
+                        <option value="ELECTRIC">Meralco (Electricity)</option>
+                        <option value="WATER">Water Provider</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Total Master Invoice Amount (PHP)</label>
+                    <input type="number" step="0.01" name="total_amount" placeholder="0.00" required
+                           class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-700 outline-none focus:border-indigo-500" />
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 rounded-xl transition cursor-pointer shadow-md">
+                    Calculate & Post Billings
+                </button>
+            </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4">Current Sub-meter Logs State</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950 text-xs text-slate-400 uppercase font-semibold">
+                        <tr>
+                            <th class="p-3">Tenant Name</th>
+                            <th class="p-3 text-center">Power (Prev → Current)</th>
+                            <th class="p-3 text-center">Water (Prev → Current)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        {% for tenant in tenants %}
+                        <tr class="hover:bg-slate-850/50 transition">
+                            <td class="p-3 font-medium text-white">{{ tenant }}</td>
+                            <td class="p-3 text-center text-xs font-mono text-amber-400">
+                                {{ tenant.previous_electric_reading }} kWh → <span class="font-bold text-amber-300">{{ tenant.current_electric_reading }} kWh</span>
+                            </td>
+                            <td class="p-3 text-center text-xs font-mono text-cyan-400">
+                                {{ tenant.previous_water_reading }} m³ → <span class="font-bold text-cyan-300">{{ tenant.current_water_reading }} m³</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="p-4 text-center text-slate-600">No tenants registered in registry.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@ import os
 import socket
 from pathlib import Path
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_path = BASE_DIR / '.env'
@@ -21,6 +22,7 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'production.pythonanywhere.com']
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -89,6 +91,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+# Set SITE_ID based on environment
 if "pythonanywhere" in socket.gethostname():
     SITE_ID = 3
 else:
@@ -102,6 +105,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# Custom allauth settings
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
@@ -123,6 +127,7 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# PWA configuration
 PWA_APP_NAME = 'RealEstateHub'
 PWA_APP_DESCRIPTION = "Secure Real Estate Assets & Ledger Dashboard"
 PWA_APP_THEME_COLOR = '#0A0A0A'
@@ -143,7 +148,7 @@ PWA_APP_ICONS_APPLE = [
 PWA_APP_DIR = 'ltr'
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 
-CACHES = {
+CACHES = {      
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
@@ -152,10 +157,9 @@ CACHES = {
 
 
 # Security settings for production deployment
-
 import os
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'False'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'False' 
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -163,5 +167,8 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Set session to expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
     
-    
+   

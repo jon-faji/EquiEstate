@@ -13,6 +13,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -28,22 +29,73 @@
     
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 antialiased">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <div class="flex min-h-screen overflow-hidden relative">
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-theme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <meta name="view-transition" content="same-origin" />
+    <style>
+        /* PREMIUM APPS SLIDE PHYSICS FRAMEWORK */
+        @keyframes slideInFromRight {
+            from { opacity: 0; transform: translateX(24px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOutToLeft {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-16px); }
+        }
+
+        /* Hardware accelerated transitions class layout profiles */
+        .page-slide-enter {
+            animation: 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both slideInFromRight;
+            will-change: transform, opacity;
+        }
+        .page-slide-exit {
+            animation: 220ms cubic-bezier(0.4, 0, 1, 1) both slideOutToLeft;
+            will-change: transform, opacity;
+        }
+
+        /* PREMIUM APP MICRO-INTERACTION UTILITIES */
+        @layer utilities {
+            .btn-animate-press {
+                transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, shadow 0.15s ease;
+            }
+            .btn-animate-press:active {
+                transform: scale(0.97) !important;
+            }
+            
+            .glass-active {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(4px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased overflow-hidden transition-colors duration-200">
+
+    {{ request.user.is_authenticated|json_script:"user-auth-state" }}
+
+    <div class="flex h-screen w-screen overflow-hidden relative">
         
         {% include 'includes/sidebar.html' %}
 
-        <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 overflow-y-auto transition-all duration-300">
+        <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-slate-50 dark:bg-slate-950 opacity-0 transition-opacity duration-200">
             
             {% include 'includes/topbar.html' %}
 
-            <div class="p-4 md:p-8">
-                {% block content %}
-                {% endblock %}
+            <div class="flex-1 overflow-y-auto w-full relative">
+                <div id="anim-content-target" class="p-4 md:p-8 w-full h-full">
+                    {% block content %}
+                    {% endblock %}
+                </div>
             </div>
         </div>
 
@@ -56,45 +108,136 @@
             const closeBtn = document.getElementById("sidebar-close-btn");
             const overlay = document.getElementById("sidebar-overlay");
             const contentWrapper = document.getElementById("main-content-wrapper");
+            const animTarget = document.getElementById("anim-content-target");
+
+            // --- SMOOTH HARDWARE-ACCELERATED SLIDE CYCLE INTERCEPTOR ---
+            if (contentWrapper && animTarget) {
+                // Pagkapasok ng bagong page view, dahan-dahang i-slide papasok galing kanan
+                requestAnimationFrame(() => {
+                    contentWrapper.classList.remove("opacity-0");
+                    animTarget.classList.add("page-slide-enter");
+                });
+
+                // Bantayan lahat ng internal links para sa slide left exit fade
+                document.querySelectorAll("a").forEach(link => {
+                    if (
+                        link.hostname === window.location.hostname && 
+                        !link.getAttribute("href").startsWith("#") && 
+                        !link.getAttribute("target") &&
+                        !link.getAttribute("href").includes("logout")
+                    ) {
+                        link.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            const destinationUrl = link.href;
+
+                            // Alisin ang pumasok na class at simulan ang slide out physics curve
+                            animTarget.classList.remove("page-slide-enter");
+                            animTarget.classList.add("page-slide-exit");
+
+                            // Maghintay ng eksaktong 180ms bago i-execute ang native page relocation link route
+                            setTimeout(() => {
+                                window.location.href = destinationUrl;
+                            }, 180);
+                        });
+                    }
+                });
+            }
+            // -----------------------------------------------------------
+
+            function applyGlobalButtonInteractions() {
+                const interactables = document.querySelectorAll('button:not([disabled]), a[href], input[type="submit"]');
+                interactables.forEach(el => {
+                    if (!el.classList.contains('btn-animate-press') && !el.closest('form[action*="logout"]')) {
+                        el.classList.add('btn-animate-press');
+                    }
+                });
+            }
+            applyGlobalButtonInteractions();
 
             if (!sidebar || !openBtn || !closeBtn || !overlay) {
-                lucide.createIcons();
-                return;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
 
             function closeSidebar() {
-                sidebar.classList.add("-translate-x-full");
-                sidebar.classList.add("lg:-mr-64"); 
-                openBtn.classList.remove("hidden");
-                overlay.classList.add("opacity-0", "pointer-events-none");
+                if(sidebar) {
+                    sidebar.classList.add("-translate-x-full");
+                    sidebar.classList.add("lg:-mr-64"); 
+                }
+                if(openBtn) openBtn.classList.remove("hidden");
+                if(overlay) overlay.classList.add("opacity-0", "pointer-events-none");
                 localStorage.setItem("sidebarState", "hidden");
             }
 
             function openSidebar() {
-                sidebar.classList.remove("-translate-x-full", "lg:-mr-64");
-                openBtn.classList.add("hidden");
-                if (window.innerWidth < 1024) {
+                if(sidebar) sidebar.classList.remove("-translate-x-full", "lg:-mr-64");
+                if(openBtn) openBtn.classList.add("hidden");
+                if (window.innerWidth < 1024 && overlay) {
                     overlay.classList.remove("opacity-0", "pointer-events-none");
                 }
                 localStorage.setItem("sidebarState", "visible");
             }
 
-            closeBtn.addEventListener("click", closeSidebar);
-            openBtn.addEventListener("click", openSidebar);
-            overlay.addEventListener("click", closeSidebar);
+            if(closeBtn) closeBtn.addEventListener("click", closeSidebar);
+            if(openBtn) openBtn.addEventListener("click", openSidebar);
+            if(overlay) overlay.addEventListener("click", closeSidebar);
 
             const savedState = localStorage.getItem("sidebarState");
             
             if (savedState === "hidden") {
-                sidebar.classList.add("transition-none", "-translate-x-full", "lg:-mr-64");
-                openBtn.classList.remove("hidden");
-                sidebar.offsetHeight; 
-                sidebar.classList.remove("transition-none");
+                if(sidebar) {
+                    sidebar.classList.add("transition-none", "-translate-x-full", "lg:-mr-64");
+                    if(openBtn) openBtn.classList.remove("hidden");
+                    sidebar.offsetHeight; 
+                    sidebar.classList.remove("transition-none");
+                }
             } else if (window.innerWidth < 1024) {
                 closeSidebar();
             }
 
-            lucide.createIcons();
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', function() {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                });
+            }
+
+            const INACTIVITY_LIMIT = 5 * 60 * 1000; 
+            let timeoutTimer;
+
+            function logoutUser() {
+                const logoutForm = document.querySelector('form[action*="logout"]');
+                if (logoutForm) {
+                    alert("Session expired due to inactivity. You will be logged out safely.");
+                    logoutForm.submit();
+                } else {
+                    window.location.href = "/accounts/logout/";
+                }
+            }
+
+            function resetTimer() {
+                clearTimeout(timeoutTimer);
+                timeoutTimer = setTimeout(logoutUser, INACTIVITY_LIMIT);
+            }
+
+            const authElement = document.getElementById('user-auth-state');
+            const isAuthenticated = authElement ? JSON.parse(authElement.textContent) : false;
+
+            if (isAuthenticated) {
+                const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+                activityEvents.forEach(eventType => {
+                    window.addEventListener(eventType, resetTimer, { passive: true });
+                });
+                resetTimer();
+            }
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         });
     </script>
 </body>
