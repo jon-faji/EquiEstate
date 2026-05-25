@@ -21,4 +21,4 @@ class TenantAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ("property", "tenant", "amount", "date", "status")
     search_fields = ("property__name", "tenant__last_name", "status")
-    list_filter = ("status", "date")
+    list_filter = ("status", "date") 

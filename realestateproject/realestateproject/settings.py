@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
     raise RuntimeError('DJANGO_SECRET_KEY environment variable is not set.')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'production.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'production.pythonanywhere.com', '192.168.8.34' ]
 
 # Application definition
 INSTALLED_APPS = [
